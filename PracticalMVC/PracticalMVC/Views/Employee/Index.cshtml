@@ -1,0 +1,59 @@
+﻿@model List<Employees_View>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<a class="btn btn-outline-primary mb-3" asp-action="InsertOrUpdate">Insert a New Employee</a>
+
+
+<h3>List of Employees</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Joining Date</th>
+            <th>Designation</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var employee in Model)
+        {
+            <tr>
+                <td>@employee.Name</td>
+                <td>@employee.Age</td>
+                <td>@employee.JoinDate.ToString("dd-MMM-yyyy")</td>
+                <td>@employee.Designation</td>
+                <td>
+                    <a asp-controller="Employee" asp-action="InsertOrUpdate" asp-route-id="@employee.UniqueId" class="btn btn-outline-primary">Update</a>
+                    <button class="btn btn-outline-danger" data-id="@employee.UniqueId" onclick="Delete(this)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function Delete(button) {
+        var id = $(button).data("id");
+        if (confirm("Are you sure you want to delete this employee?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Employee/Delete?id=" + id, 
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(status + ": " + error);
+                }
+            });
+        }
+    }
+
+</script>
